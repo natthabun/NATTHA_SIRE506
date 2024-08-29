@@ -1,5 +1,5 @@
 ### Genetic association study [Tresukosol, et al. PLoS One. 2014​](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0110188) ###
-**Effects of Cytochrome P450 2C19 and Paraoxonase 1 Polymorphisms on Antiplatelet Response to Clopidogrel Therapy in Patients with Coronary Artery Disease**
+**Title : Effects of Cytochrome P450 2C19 and Paraoxonase 1 Polymorphisms on Antiplatelet Response to Clopidogrel Therapy in Patients with Coronary Artery Disease**
 | No. |  Questions from the research article  | No. | Knowledge topics to gain more understanding|
 |:----------: | -----------| :-----------: | ----------- |
 |  1 |  What is an odds ratio, and how do you calculate it?  | 1  |   inter-individual variability |
@@ -12,7 +12,7 @@
 
 
 ### Sequencing and annotation [Suktitipat, et al. PLoS One. 2017](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0180056) ###
-**Molecular investigation by whole exome sequencing revealed a high proportion of pathogenic variants among Thai victims of sudden unexpected death syndrome**
+**Title : Molecular investigation by whole exome sequencing revealed a high proportion of pathogenic variants among Thai victims of sudden unexpected death syndrome**
 | No. | Questions from the research article   | No.   | Knowledge topics to gain more understanding|
 |:-----------:| ----------- | :-----------:| ----------- |
 |  1 |  What is the difference between detailed autopsy and molecular autopsy?  |  1  |  transcript ablation |
