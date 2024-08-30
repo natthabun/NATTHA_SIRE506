@@ -14,7 +14,7 @@
 |  10 | What do *2 and *3 mean in CYP2C19*2 and *3? And what is the difference between them? |   |   |
 |  11 | What is multiple electrode platelet aggregometry (MEA), and how does it work? |  |  |
 | 12 | What are the guanidine-HCl methods, and how does it work? |  |  |
-| 13 | How to calculate linkage disequilibrium (LD), and what standardized LD coefficient (D') and correlation coefficient are represented? |  |  |
+| 13 | How to calculate linkage disequilibrium (LD), and what standardized LD coefficient (D') and correlation coefficient (r) are represented? |  |  |
 | 14 | What is the difference between a combined effect and a co-dominant effect? |  |  |
 
 
@@ -28,4 +28,7 @@
 |  4 |  What information is stored in the dbNSFP database?  |  4   | allelic heterogeneity |
 |  5 |  What information is stored in ClinVar?  |   5 | genetic heterogeneity  |
 |  6 |  What is metaSVM?  |  6  |  double heterozygote |
+| 7  |  What is prophylactic treatment, and how many types does it have?   | 7  |  Sequence ontology  |
+| 8  | Is whole exome sequencing (WES) the most commonly used in all next-generation sequencing (NGS)? And why does it be? | 8 | Deleterious variant |
+| 9  | How can we know which database to use for filtering variants based on minor allele frequency (MAF)? Is there any criteria for this? |   |    |
 
