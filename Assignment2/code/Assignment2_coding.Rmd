@@ -1,0 +1,80 @@
+---
+title: "Assignment2_coding"
+author: "Nattha Bunyamani"
+date: "2024-09-11"
+output: html_document
+---
+### 1.Coding Part
+##Import Titanic dataset
+```{r}
+library(readr)
+train <- read_csv("C:/Users/natth/Documents/SIRE506/Assignment2/data/train.csv")
+View(train)
+```
+## Install used packages
+```{r}
+#for creating Table 1
+install.packages("gtsummary")
+install.packages("gt")
+
+#for creating Boxplot
+install.packages("ggplot2") 
+```
+
+## Create table of summary statistics
+```{r}
+library(readr)
+train <- read_csv("C:/Users/natth/Documents/SIRE506/Assignment2/data/train.csv")
+View(train)
+```
+
+### Create table of summary statistics
+
+```{r}
+library(gtsummary)
+library(gt)
+
+#create a gtsummary table
+table1 <- train %>%
+  select(Survived, Age, Fare, SibSp, Parch, Sex, Pclass) %>%
+  tbl_summary(
+    by = Survived,
+    statistic = list(
+      all_continuous() ~ c("{median} ({IQR})"),  
+      all_categorical() ~ "{n} ({p}%)"
+    )
+  ) %>%
+  modify_header(label = "**Characteristic**") %>%  
+  modify_spanning_header(all_stat_cols() ~ "**Survival Status**") %>%
+  
+#convert a gtsummary table into a gt table object, for adding header and footnote
+  as_gt() %>%  
+  gt::tab_header(
+    title = "Table 1: Summary statistics of Titanic Passenger Data by Survival Status"
+  ) %>%
+  gt::tab_footnote(
+    footnote = "0 = Not survived, 1 = Survived",
+    locations = gt::cells_title(groups = "title"
+  ))
+table1
+```
+
+## create boxplot for checking Outliers
+```{r}
+library(ggplot2) 
+
+#create a boxplot for checking Outliers in Age
+boxplot_age <- ggplot (train, aes(x = as.factor(Survived), y = Age)) +
+  geom_boxplot(outlier.colour = "seagreen", outlier.shape = 17, outlier.size = 3) +
+  scale_x_discrete(labels = c("0" = "Not Survived", "1" = "Survived")) +
+  labs(x = "Survival Status", y = "Age", title = "Boxplot 1: Distribution of Age by Survival Status (With Outliers)")
+
+#create a boxplot for checking Outliers in Fare
+boxplot_fare <- ggplot (train, aes(x = as.factor(Survived), y = Fare)) +
+  scale_x_discrete(labels = c("0" = "Not Survived", "1" = "Survived")) +
+  geom_boxplot(outlier.colour = "coral3", outlier.shape = 17, outlier.size = 3) +
+  labs(x = "Survival Status", y = "Fare", title = "Boxplot 2: Distribution of Fare by Survival Status (With Outliers)")
+
+boxplot_age
+boxplot_fare
+```
