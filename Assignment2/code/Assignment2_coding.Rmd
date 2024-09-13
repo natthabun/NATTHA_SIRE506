@@ -21,12 +21,6 @@ install.packages("gt")
 install.packages("ggplot2") 
 ```
 
-## Create table of summary statistics
-```{r}
-library(readr)
-train <- read_csv("C:/Users/natth/Documents/SIRE506/Assignment2/data/train.csv")
-View(train)
-```
 
 ### Create table of summary statistics
 
