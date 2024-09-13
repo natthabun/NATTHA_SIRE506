@@ -4,14 +4,14 @@ author: "Nattha Bunyamani"
 date: "2024-09-11"
 output: html_document
 ---
-### 1.Coding Part
-##Import Titanic dataset
+## 1.Coding Part
+### Import a local CSV file (train.csv, Titanic dataset)
 ```{r}
 library(readr)
 train <- read_csv("C:/Users/natth/Documents/SIRE506/Assignment2/data/train.csv")
 View(train)
 ```
-## Install used packages
+### Install used packages
 ```{r}
 #for creating Table 1
 install.packages("gtsummary")
@@ -53,7 +53,7 @@ table1 <- train %>%
 table1
 ```
 
-## create boxplot for checking Outliers
+### create boxplot for checking Outliers
 ```{r}
 library(ggplot2) 
 
