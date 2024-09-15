@@ -16,6 +16,7 @@ View(train)
 #for creating Table 1
 install.packages("gtsummary")
 install.packages("gt")
+install.packages("dplyr")
 
 #for creating Boxplot
 install.packages("ggplot2") 
@@ -27,6 +28,7 @@ install.packages("ggplot2")
 ```{r}
 library(gtsummary)
 library(gt)
+library(dplyr)
 
 #create a gtsummary table
 table1 <- train %>%
