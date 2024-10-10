@@ -5,10 +5,10 @@ date: "2024-09-11"
 output: html_document
 ---
 ## 1.Coding Part
-### Import a local CSV file (train.csv, Titanic dataset)
+### Import a CSV file (train.csv, Titanic dataset)
 ```{r}
 library(readr)
-train <- read_csv("C:/Users/natth/Documents/SIRE506/Assignment2/data/train.csv")
+train <- read_csv("../data/train.csv")
 View(train)
 ```
 ### Install used packages
