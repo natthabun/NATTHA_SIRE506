@@ -1,0 +1,172 @@
+---
+title: "HW3_summary"
+author: "Nattha Bunyamani"
+date: "2024-11-10"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+According to the "PlateletHW.tsv" dataset, which contains 211 observed records with 11 variables. There are two continuous variables: ADP-induced platelet aggregation level (ADP), which measures the level of platelet response, and Age, measured in years. There are 5 categorical variables: Clopidogrel resistance, marked as "1" for those resistant to drug and "0" for those not resistant to drug. Sex is coded as "0" for male and "1" for female. Also, the genetic data for three SNPs: rs4244285 (CYP2C19\*2), rs4986893 (CYP2C19\*3), and rs662 (PON1 192Q\>R). Each genotype is coded as 0, 1, or 2 depending on the number of minor alleles exactly for each SNP:
+
+-   For rs4244285 (CYP2C19\*2): 0 represents "GG", 1 represents "AG", and 2 represents "AA".
+
+-   For rs4986893 (CYP2C19\*3): 0 represents "AA", and 1 represents "AG".
+
+-   For rs662 (PON1 192Q\>R): 0 represents "AA", 1 represents "AG", and 2 represents "GG".
+
+To examine the association between the three SNPs and the level of ADP-induced platelet aggregation, we can divide the analysis into two main steps: data cleaning by handling the outliers and test of association
+
+# 1. Data cleaning
+
+In this step, starting with loading some necessary packages, setting the location of the current working directory, and then loading the raw data. After that, use the summary function to see the statistics of ADP values in the raw data. As you can see in the summery, that the minimum of the value is -8.721, which is negative value and cannot thus be used for analysis due to the fact that ADP is measured as a percentage increase in platelet aggregation compared to a baseline level, so the appearance of a negative value would be abnormal.
+
+```{r loading library and dataset}
+library(tidyverse)
+
+setwd("../HW3/")
+
+data <- read.table("raw_data/PlateletHW.tsv", header = TRUE, sep = "\t")
+```
+
+```{r summary raw dataset}
+summary(data$ADP)
+```
+
+To ensure the analysis is reliable and to avoid drawing a fault conclusion due to using abnormal values for analysis. We filtered outliers and negative values from the data. Boxplot by ggplot function has been used here to visualize the distribution of ADP levels, helping us identify any possible outliers. We used quartiles to filter outliers because they capture the central interval range of the data while excluding extreme values.
+
+As a result, we found out 5 outliers, which are all negative values, and removed them from the dataset. After filtering, we confirmed with the summary function that the minimum value is now 1.60, meaning all values are within the defined range and with no more negative values left. The outliers-free cleaned dataset was saved as "PlateletHW_cleaned.tsv" in the clean_data directory.
+
+```{r boxplot}
+ggplot(data, aes(x = "", y = ADP)) +
+  geom_boxplot(outlier.colour = "red", outlier.shape = 16, outlier.size = 5) +
+  labs(title = "ADP-Induced Platelet Aggregation Levels", y = "ADP Level") +
+  theme_minimal()
+```
+
+```{r calculating cut-off range}
+Q1 <- quantile(data$ADP, 0.25)
+Q3 <- quantile(data$ADP, 0.75)
+IQR <- Q3 - Q1
+lower_outlier <- Q1 - 1.5 * IQR
+upper_outlier <- Q3 + 1.5 * IQR
+
+cat("Lower Outlier Bound:", lower_outlier, "\n")
+cat("Upper Outlier Bound:", upper_outlier, "\n")
+
+outliers <- data %>%
+  filter(ADP < lower_outlier | ADP > upper_outlier | ADP < 0)
+
+print(outliers)
+```
+
+```{r filtering outliers and showing summary of cleaned dataset}
+cleaned_data <- data %>%
+  filter(ADP >= 0 & ADP >= lower_outlier & ADP <= upper_outlier) %>%
+  drop_na()
+
+summary(cleaned_data$ADP)
+```
+
+```{r save cleaned dataset}
+write.table(cleaned_data, "clean_data/PlateletHW_cleaned.tsv", sep = "\t", row.names = FALSE)
+```
+
+# 2. Test of Association
+
+To investigate the association between the three SNPs and ADP-induced platelet aggregation levels, start by loading the cleaned dataset and assigning it to the cleaned_data variable. Before linear regression, it's important to check whether the ADP values follow a normal distribution using a QQ plot. The first QQ plot shows that the values of ADP are not normally distributed, with the deviations from the theoretical line in the tails. This kind of skewness in data may affect the assumptions of linear regression and furthermore impact the reliability of results.
+
+To resolve this problem, we apply a log transformation to the ADP values to reduce skewness and making the distribution closer to normal. After transformation, the second QQ plot shows an improved alignment with the theoretical line in the middle range of the data, although there is still some deviation at the tails. The log transformation doesn’t fully normalize the data; however, it does reduce skewness and makes the distribution more suitable for regression analysis.
+
+```{r load cleaned dataset}
+cleaned_data <- read.table("clean_data/PlateletHW_cleaned.tsv", header = TRUE, sep = "\t")
+```
+
+```{r QQ Plot for ADP}
+ggplot(cleaned_data, aes(sample = ADP)) +
+  stat_qq() +
+  stat_qq_line(color = "blue") +
+  ggtitle("QQ Plot for ADP")
+```
+
+```{r QQ Plot for log(ADP)}
+cleaned_data$log_ADP <- log(cleaned_data$ADP)
+
+ggplot(cleaned_data, aes(sample = log_ADP)) +
+  stat_qq() +
+  stat_qq_line(color = "red") +
+  ggtitle("QQ Plot for log(ADP)")
+```
+
+To determine the relationship between each SNP and log-transformed ADP levels independently, we used single linear regression models and examined the p-values of each model. These results show that both rs4244285 and rs4986893 significantly impact the levels of ADP by p-values 0.000111 and 0.00793, respectively. In contrast, rs662 does not show a statistically significant impact with ADP levels since its p-value is 0.784.
+
+We can use boxplots to show the distribution of log-transformed ADP levels across genotypes for each SNP for further demonstration. For rs4244285 and rs4986893, boxplots indicated an increasing trend across the genotypes in both cases, which support the result of statistically significant associations from the regression models, while the trend for rs662 was flat across genotypes, supporting the result of non-statistical significance observed for this SNP in the regression analysis.
+
+```{r Single Linear Regression}
+#Single Linear Regression for each SNP
+model_rs4244285 <- lm(log_ADP ~ rs4244285, data = cleaned_data)
+summary(model_rs4244285)
+
+model_rs4986893 <- lm(log_ADP ~ rs4986893, data = cleaned_data)
+summary(model_rs4986893)
+
+model_rs662 <- lm(log_ADP ~ rs662, data = cleaned_data)
+summary(model_rs662)
+```
+
+```{r QQ plot between log(ADP) and rs4244285 genotype}
+ggplot(cleaned_data, aes(x = rs4244285, y = log_ADP)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "orange") +
+  labs(title = "Association between log(ADP) and rs4244285 genotype",
+       x = "rs4244285 Genotype (0, 1, 2)",
+       y = "log(ADP)") +
+  theme_minimal()
+```
+
+```{r QQ plot between log(ADP) and rs4986893 genotype}
+ggplot(cleaned_data, aes(x = rs4986893, y = log_ADP)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "green") +
+  labs(title = "Association between log(ADP) and rs4986893 genotype",
+       x = "rs4986893 Genotype (0, 1, 2)",
+       y = "log(ADP)") +
+  theme_minimal()
+```
+
+```{r QQ plot between log(ADP) and rs662 genotype}
+ggplot(cleaned_data, aes(x = rs662, y = log_ADP)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "purple") +
+  labs(title = "Association between log(ADP) and rs662 genotype",
+       x = "rs662 Genotype (0, 1, 2)",
+       y = "log(ADP)") +
+  theme_minimal()
+```
+
+Even though both rs4244285 and rs4986893 have independent effects on ADP level, these independent effects may be interdependent due to the interaction between these SNPs. Using multiple linear regression allows us to analyze the influence of all three SNPs together on the ADP level and possible confounding between these SNPs. When including all three SNPs as predictor variables, the results are the same with the single linear regressions, which are both rs4244285 and rs4986893 are significantly related to ADP levels, while rs662 is not. 
+
+Further investigating by including more covariates of resistance, AGE, and SEX to ensure comprehensively determining all the effects of predictors. In this model, resistance was the only variable that showed statistical significance to ADP levels, while both rs4244285 and rs4986893 became nonsignificant. These results may indicate that resistance is a confounding variable, potentially acting to mediate the relationship of those SNPs with ADP levels. 
+
+To further explore this, logistic regression of the SNPs for resistance is considered. As a result, rs4244285 and rs4986893 are significantly associated with resistance. Thus, resistance is a mediator of the association between the ADP levels and these SNPs.
+
+```{r Multiple linear regression}
+# Multiple linear regression including covariates
+model_SNPs <- lm(log_ADP ~ rs4244285 + rs4986893 + rs662, data = cleaned_data)
+summary(model_SNPs)
+
+model_all_variables <- lm(log_ADP ~ rs4244285 + rs4986893 + rs662 + Resistance + AGE + SEX, data = cleaned_data)
+summary(model_all_variables)
+```
+
+```{r Logistic regression}
+#Logistic regression to examine the association between Resistance and three SNPs
+model_resistance <- glm(Resistance ~ rs4244285 + rs4986893 + rs662, family = binomial, data = cleaned_data)
+summary(model_resistance)
+```
+
+# Summary
+
+In summary, staring from the cleaning step, five outliers, which were all negative values, were found and removed. The ADP values were log-transformed in order to best fit for linear regression analysis. The single linear regression was conducted for testing the association of log-transformed ADP with each SNP, indicating that rs4244285 and rs4986893 are statistically significant but rs662 is not significantly associated with it. For further investigation, the multiple linear regression was used, which yielded similar results. However, with the addition of more covariates, the results were altered; resistance was the only variable that showed statistical significance, and both SNPs became non-significant. This was supported by logistic regression showing that resistance is associated with both SNPs. These results imply that resistance is a confounder of the relationship between SNPs and ADP levels, meaning that the association between the SNPs and ADP depends on the presence of resistance. Thus, it is likely that the direct effect of the SNPs on ADP levels is mediated through resistance.
